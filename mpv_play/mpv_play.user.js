@@ -13,7 +13,6 @@ GM_addStyle('#mpvlink { font-size: 50%; vertical-align: middle; } #mpvlink:hover
 // Create the link.
 var mpvlink = document.createElement('a');
 mpvlink.id = 'mpvlink';
-mpvlink.href = 'mpv://' + document.location.href;
 mpvlink.title = 'Play the video in MPV.';
 mpvlink.text = '⏏';
 // Pause the on-page video when clicked.
@@ -25,6 +24,7 @@ var add_link_if_possible = function () {
   // If the title element exists and the link doesn't,
   // add the link in title.
   if(!mpv_lnk && tit) {
+    mpvlink.href = 'mpv://' + document.location.href;
     tit.parentElement.appendChild(mpvlink);
   }
 }
