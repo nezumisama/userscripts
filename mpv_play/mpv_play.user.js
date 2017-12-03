@@ -3,36 +3,38 @@
 // @namespace   nez
 // @description Add an link (eject symbol) on youtube video pages opening the video in MPV (or similar).
 // @include     /^https?://(?:www)?\.youtube\.com/
-// @version     0.3
-// @grant       GM_addStyle
+// @version     0.4
+// @grant       none
 // ==/UserScript==
 
-// Add styling rules for the element.
-GM_addStyle('#mpvlink { color: inherit; text-decoration: none; } #mpvlink:hover { color: #77aadd; text-decoration: none; }');
-
-// Create the link.
-var mpvlink = document.createElement('a');
-mpvlink.id = 'mpvlink';
-mpvlink.title = 'Play the video in MPV.';
-mpvlink.text = '⏏';
-// Pause the on-page video when clicked.
-var onclick = function(e) {
-  document.getElementsByTagName('video')[0].pause();
+var add_style = function(css_text) {
+  var style = document.createElement('style');
+  style.type = 'text/css';
+  style.appendChild(document.createTextNode(css_text));
+  document.getElementsByTagName('head')[0].appendChild(style);
 }
-mpvlink.addEventListener('click', onclick);
 
-var add_link_if_possible = function () {
-  var mpv_lnk = document.getElementById('mpvlink');
-  var tit = document.querySelector('h1.title');
-  // If the title element exists and the link doesn't,
-  // add the link in the title.
-  if(!mpv_lnk && tit) {
-    mpvlink.href = 'mpv://' + document.location.href;
-    tit.appendChild(mpvlink);
-    window.clearInterval(interval_id);
+var add_or_update_link = function () {
+  self = add_or_update_link;
+  if (!self.link) {
+    self.link = document.createElement('a');
+    self.link.id = 'mpvlink';
+    self.link.title = 'Play the video in MPV.';
+    self.link.text = '⏏';
+    click = e => document.getElementsByTagName('video')[0].pause()
+    self.link.addEventListener('click', click);
   }
+  self.link.href = 'mpv://' + document.location.href;
+  if (!self.appended) {
+    var title = document.querySelector('h1.title');
+    if (title) {
+      title.appendChild(self.link);
+      self.appended = true;
+    }
+  }
+  window.setTimeout(self, 1000);
 }
 
-add_link_if_possible();
-// Repeatedly try adding.
-var interval_id = window.setInterval(add_link_if_possible, 2000);
+add_style('#mpvlink { color: inherit; text-decoration: none; } '+
+          '#mpvlink:hover { color: #77aadd; text-decoration: none; }');
+add_or_update_link();
