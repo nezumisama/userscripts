@@ -3,7 +3,7 @@
 // @namespace   nez
 // @description Add an link (eject symbol) on youtube video pages opening the video in MPV (or similar).
 // @include     /^https?://(?:www)?\.youtube\.com/
-// @version     0.4
+// @version     0.5
 // @grant       none
 // ==/UserScript==
 
@@ -25,16 +25,17 @@ var add_or_update_link = function () {
     self.link.addEventListener('click', click);
   }
   self.link.href = 'mpv://' + document.location.href;
-  if (!self.appended) {
-    var title = document.querySelector('h1.title');
-    if (title) {
-      title.appendChild(self.link);
-      self.appended = true;
-    }
+  var title = document.querySelector(
+    'h1.title.ytd-video-primary-info-renderer'
+  );
+  if (title && title.childNodes[title.childNodes.length - 1] !== self.link) {
+    title.appendChild(self.link);
   }
   window.setTimeout(self, 1000);
 }
 
-add_style('#mpvlink { color: inherit; text-decoration: none; } '+
-          '#mpvlink:hover { color: #77aadd; text-decoration: none; }');
+add_style(
+  '#mpvlink { color: inherit; text-decoration: none; } '+
+  '#mpvlink:hover { color: #77aadd; text-decoration: none; }'
+);
 add_or_update_link();
